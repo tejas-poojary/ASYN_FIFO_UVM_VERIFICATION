@@ -43,7 +43,7 @@ endtask
     exp_empty=(mimic_fifo.size()==0);
    if (wr_seqit.winc) 
     begin
-      if (vif_scb.scb_wr_cb.wrst_n == 0) 
+      if (wr_seqit.wrst_n == 0)  //changed from interface reset to sequence item reset
         begin
          if (mimic_fifo.size() > 0) 
            begin
@@ -62,7 +62,13 @@ endtask
             if (exp_full == 0)
              `uvm_error(get_full_name(),"Full flag not asserted even though fifo is full")
             else
-             `uvm_info(get_full_name(),"Full flag asserted correctly but cannot write further",UVM_LOW)
+              begin
+               `uvm_info(get_full_name(),"Full flag asserted correctly but cannot write further",UVM_LOW)
+                if(exp_full!=wr_seqit.wfull)
+                  `uvm_error(get_full_name(),$sformatf("Mismatch of full flag || exp_full=%0d || wfull=%0d",exp_full,wr_seqit.wfull))
+                else
+                  `uvm_info(get_full_name(),$sformatf("Match of full flag || exp_full=%0d || wfull=%0d",exp_full,wr_seqit.wfull),UVM_MEDIUM)
+              end
            end 
         else       //fifo is not full
           begin
@@ -83,13 +89,13 @@ endtask
     exp_empty=(mimic_fifo.size()==0);
    if(rd_seqit.rinc) 
      begin
-       if(vif_scb.scb_rd_cb.rrst_n == 0)
+       if(rd_seqit.rrst_n == 0)
          begin
            if(mimic_fifo.size>0)
             begin
              exp_read_data=mimic_fifo.pop_back();
-             if (exp_read_data !== rd_seqit.rdata)
-             `uvm_error(get_full_name(),$sformatf("UNMATCH: Expected=%0d, Got=%0d",exp_read_data,rd_seqit.rdata))
+              if (exp_read_data !== rd_seqit.rdata)
+                `uvm_error(get_full_name(),$sformatf("MISMATCH: Expected=%0d, Got=%0d",exp_read_data,rd_seqit.rdata))
              else
                `uvm_info(get_full_name(),$sformatf("MATCH: Expected=%0d,Got=%0d (queue size after popping out %0d=%0d)",exp_read_data, rd_seqit.rdata,exp_read_data, mimic_fifo.size()),UVM_MEDIUM)
            end
