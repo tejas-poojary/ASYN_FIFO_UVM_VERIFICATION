@@ -10,8 +10,8 @@ class fifo_subscriber extends uvm_component;
   
   covergroup wr_act_mon;
     WRITE_DATA:coverpoint wr_item.wdata { 
-                                          bins first_half[] = {[0:127]};
-                                          bins second_half[] = {[128:255]};
+                                          bins first_half = {[0:127]};
+                                          bins second_half = {[128:255]};
                                         }
     WRITE_INC:coverpoint wr_item.winc{
                                        bins zero = {0};
@@ -21,12 +21,13 @@ class fifo_subscriber extends uvm_component;
                                          bins not_full = {0};
                                          bins full = {1};
                                        }
+    WINC_X_WFULL :cross wr_item.winc,wr_item.wfull;
    endgroup
   
   covergroup rd_act_mon;
     READ_DATA:coverpoint rd_item.rdata { 
-                                          bins first_half[] = {[0:127]};
-                                          bins second_half[] = {[128:255]};
+                                          bins first_half = {[0:127]};
+                                          bins second_half = {[128:255]};
                                        }
     READ_INC:coverpoint rd_item.rinc{
                                        bins zero = {0};
@@ -36,6 +37,7 @@ class fifo_subscriber extends uvm_component;
                                          bins not_empty = {0};
                                          bins empty = {1};
                                         }
+    RINC_X_REMPTY :cross rd_item.rinc,rd_item.rempty;
   endgroup
   
   
