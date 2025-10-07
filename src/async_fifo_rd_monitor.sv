@@ -4,6 +4,7 @@ class rd_monitor extends uvm_monitor;
   rd_seq_item rd_mon_item;
   uvm_analysis_port#(rd_seq_item)rd_mon_port;
   event read_mon_trigger;
+  logic captured_rrst_n;
   
   function new(string name="rd_monitor",uvm_component parent=null);
     super.new(name,parent);
@@ -28,10 +29,12 @@ class rd_monitor extends uvm_monitor;
     forever begin
       rd_mon_item=rd_seq_item::type_id::create("rd_mon_item");
       wait(read_mon_trigger.triggered);
+      captured_rrst_n = vif_rd_mon.rrst_n;   //added
       @(posedge vif_rd_mon.rd_mon_cb);
       rd_mon_item.rdata=vif_rd_mon.rd_mon_cb.rdata;
       rd_mon_item.rinc=vif_rd_mon.rd_mon_cb.rinc;
       rd_mon_item.rempty=vif_rd_mon.rd_mon_cb.rempty;
+      rd_mon_item.rrst_n=captured_rrst_n;   //added
       rd_mon_port.write(rd_mon_item);
       `uvm_info("Read Monitor Capturing",$sformatf("Got: %s at %0t",rd_mon_item.sprint(),$time), UVM_LOW)
     end
