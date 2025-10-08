@@ -44,11 +44,9 @@ class virtual_sequence extends uvm_sequence#(uvm_sequence_item);
       fork   //no constraint case
       begin
         wr_seq.start(v_seqr.wr_seqr);
-        #100;
       end
       begin
         rd_seq.start(v_seqr.rd_seqr);
-        #100;
       end
     join  
         
